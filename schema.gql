@@ -1,0 +1,78 @@
+scalar AWSDateTime
+scalar AWSEmail
+
+type Organization {
+  id: ID
+  name: String
+  vat: String
+  locations: [Location]
+}
+
+type Location {
+  id: ID!
+  name: String
+  address: String
+  organization: Organization
+}
+
+type Drop {
+  id: ID!
+  origin: Location
+  destination: Location
+}
+
+type ScheduleStop {
+  idx: Int
+  location: Location
+  arrival: AWSDateTime
+  span: Int
+}
+
+type Schedule {
+  distance: Int
+  duration: Int
+  stops: [ScheduleStop]
+  connections: [ScheduleConnection]
+}
+
+enum QuoteRequestStatus {
+  Requested
+  Quoted
+  Approved
+  Canceled
+}
+
+enum Currency {
+  CZK
+  USD
+  EUR
+}
+
+type Quote {
+  price: Float
+  currency: Currency
+}
+
+type QuoteRequest {
+  organization: Organization
+  contact: AWSEmail
+  status: QuoteRequestStatus
+  quotes: [Quote]
+}
+
+type Quotes {
+  total: Int
+  requests: [QuoteRequest]
+}
+
+type Shipment {
+  id: ID!
+  labels: [String]
+  drops: [Drop]
+  schedule: Schedule
+  quotes: Quotes
+}
+
+type Query {
+  getShipment(id: ID!): Shipment
+}
